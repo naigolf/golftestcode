@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>Blind Test เครื่องดื่ม.</title>
+  <title>Blind Test เครื่องดื่ม+</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -31,17 +31,13 @@
     }
     input, select, button {
       padding: 8px;
-      margin: 5px 2px; /* ปรับ margin เล็กน้อย */
+      margin: 5px 0;
       width: 100%;
       max-width: 300px;
     }
     canvas {
       margin-top: 30px;
       max-width: 100%;
-    }
-    .button-container { /* เพิ่ม class สำหรับจัดกลุ่มปุ่ม */
-      text-align: right;
-      margin-bottom: 10px;
     }
     @media (min-width: 600px) {
       input, select, button {
@@ -53,10 +49,10 @@
 <body>
   <h1>Blind Test เครื่องดื่ม <span>Cr. NaiGolf</span></h1>
 
-  <div class="button-container">
-    <button onclick="resetStoredData()" style="background-color: #ffcccc;">🔄 รีเซ็ตข้อมูลทั้งหมด</button>
-    <button onclick="openDrinkConfig()">⚙️ ตั้งค่าเครื่องดื่ม</button>
-  </div>
+  <div style="text-align: right;">
+  <button onclick="openDrinkConfig()">⚙️ ตั้งค่าเครื่องดื่ม</button>
+</div>
+
   <div>
     <label>ชื่อผู้ทดสอบ:</label><br>
     <input type="text" id="testerName" placeholder="เช่น a"><br>
@@ -83,37 +79,37 @@
   </table>
 
   <h3>สรุปอันดับ 1</h3>
-  <table id="rank1Summary">
-    <thead>
-      <tr>
-        <th>ชื่อเครื่องดื่ม</th>
-        <th>จำนวนคนโหวต</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<table id="rank1Summary">
+  <thead>
+    <tr>
+      <th>ชื่อเครื่องดื่ม</th>
+      <th>จำนวนคนโหวต</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-  <h3>สรุปอันดับ 2</h3>
-  <table id="rank2Summary">
-    <thead>
-      <tr>
-        <th>ชื่อเครื่องดื่ม</th>
-        <th>จำนวนคนโหวต</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<h3>สรุปอันดับ 2</h3>
+<table id="rank2Summary">
+  <thead>
+    <tr>
+      <th>ชื่อเครื่องดื่ม</th>
+      <th>จำนวนคนโหวต</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-  <h3>สรุปอันดับ 3</h3>
-  <table id="rank3Summary">
-    <thead>
-      <tr>
-        <th>ชื่อเครื่องดื่ม</th>
-        <th>จำนวนคนโหวต</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<h3>สรุปอันดับ 3</h3>
+<table id="rank3Summary">
+  <thead>
+    <tr>
+      <th>ชื่อเครื่องดื่ม</th>
+      <th>จำนวนคนโหวต</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
   <h3>คะแนนรวมแต่ละเครื่องดื่ม</h3>
   <table id="summaryTable">
@@ -129,24 +125,18 @@
   <canvas id="resultsChart" height="300"></canvas>
 
   <script>
-    // --- START: เพิ่ม defaultDrinks constant ---
-    const defaultDrinksList = ["แก้ว1", "แก้ว2", "แก้ว3", "แก้ว4", "แก้ว5", "แก้ว6", "แก้ว7", "แก้ว8"];
-    let drinks = [...defaultDrinksList]; // กำหนดค่าเริ่มต้นให้ drinks
+    // --- START: แก้ไขส่วนนี้ ---
+    let drinks = ["แก้ว1", "แก้ว2", "แก้ว3", "แก้ว4", "แก้ว5", "แก้ว6", "แก้ว7", "แก้ว8"];
     let votes = [];
-    // --- END: เพิ่ม defaultDrinks constant ---
 
     // โหลด drinks จาก localStorage (ถ้ามี)
     const storedDrinks = localStorage.getItem('blindTestDrinks');
     if (storedDrinks) {
       try {
-        const parsedDrinks = JSON.parse(storedDrinks);
-        if (Array.isArray(parsedDrinks) && parsedDrinks.length > 0) { // ตรวจสอบว่าเป็น array และไม่ว่าง
-            drinks = parsedDrinks;
-        } else {
-            localStorage.removeItem('blindTestDrinks'); // ลบถ้าข้อมูลไม่ถูกต้อง
-        }
+        drinks = JSON.parse(storedDrinks);
       } catch (e) {
         console.error("Error parsing stored drinks:", e);
+        // ถ้ามีปัญหาในการ parse ให้ใช้ค่า default และลบค่าที่เสียออกจาก localStorage
         localStorage.removeItem('blindTestDrinks');
       }
     }
@@ -155,22 +145,27 @@
     const storedVotes = localStorage.getItem('blindTestVotes');
     if (storedVotes) {
       try {
-        const parsedVotes = JSON.parse(storedVotes);
-        if (Array.isArray(parsedVotes)) { // ตรวจสอบว่าเป็น array
-            votes = parsedVotes;
-        } else {
-            localStorage.removeItem('blindTestVotes'); // ลบถ้าข้อมูลไม่ถูกต้อง
-        }
+        votes = JSON.parse(storedVotes);
       } catch (e) {
         console.error("Error parsing stored votes:", e);
+        // ถ้ามีปัญหาในการ parse ให้ใช้ค่า default และลบค่าที่เสียออกจาก localStorage
         localStorage.removeItem('blindTestVotes');
       }
     }
+    // --- END: แก้ไขส่วนนี้ ---
 
+
+    // เติม dropdown
     function populateDrinkDropdowns() {
       [rank1, rank2, rank3].forEach(select => {
-        const firstOptionText = `อันดับ ${select.id === 'rank1' ? 1 : select.id === 'rank2' ? 2 : 3}`;
-        select.innerHTML = `<option value="">${firstOptionText}</option>`; // เริ่มต้นด้วย option default
+        // เก็บ option แรก (เช่น "อันดับ 1")
+        const firstOption = select.options[0] ? select.options[0].cloneNode(true) : document.createElement('option');
+        if (!select.options[0] || select.options[0].value !== "") { // สร้าง option default ถ้ายังไม่มี
+             firstOption.value = "";
+             firstOption.textContent = `อันดับ ${select.id === 'rank1' ? 1 : select.id === 'rank2' ? 2 : 3}`;
+        }
+        select.innerHTML = ""; // ล้าง options เก่า
+        select.appendChild(firstOption); // เพิ่ม option แรกกลับเข้าไป
 
         drinks.forEach(d => {
           const option = document.createElement("option");
@@ -180,7 +175,7 @@
         });
       });
     }
-    populateDrinkDropdowns();
+    populateDrinkDropdowns(); // เรียกเพื่อให้ dropdown แสดงชื่อเครื่องดื่มล่าสุด
 
     function submitVote() {
       const name = testerName.value.trim();
@@ -199,48 +194,73 @@
       }
 
       votes.push({ name, ranks });
-      localStorage.setItem('blindTestVotes', JSON.stringify(votes));
 
+      // --- START: แก้ไขส่วนนี้ ---
+      // บันทึก votes ลง localStorage
+      localStorage.setItem('blindTestVotes', JSON.stringify(votes));
+      // --- END: แก้ไขส่วนนี้ ---
+
+      // reset form
       testerName.value = "";
       [rank1, rank2, rank3].forEach(select => select.selectedIndex = 0);
 
-      updateAllDisplays();
+      updateTable();
+      updateSummary();
+      updateRankSummary();
+      updateChart();
     }
 
     function updateTable() {
       resultsBody.innerHTML = "";
+
       votes.forEach(vote => {
         const row = document.createElement("tr");
-        row.insertCell().textContent = vote.name;
-        row.insertCell().textContent = vote.ranks[0] || "-";
-        row.insertCell().textContent = vote.ranks[1] || "-";
-        row.insertCell().textContent = vote.ranks[2] || "-";
+        const nameCell = document.createElement("td");
+        nameCell.textContent = vote.name;
+        row.appendChild(nameCell);
+
+        [0, 1, 2].forEach(i => {
+          const cell = document.createElement("td");
+          const drink = vote.ranks[i] || "-";
+          cell.textContent = drink;
+          row.appendChild(cell);
+        });
+
         resultsBody.appendChild(row);
       });
     }
 
     function updateSummary() {
       const countMap = {};
-      drinks.forEach(d => countMap[d] = 0);
+      drinks.forEach(d => countMap[d] = 0); // เริ่มต้นด้วยเครื่องดื่มทั้งหมดที่รู้จัก
       votes.forEach(vote => {
         vote.ranks.forEach(drink => {
-          if (countMap.hasOwnProperty(drink)) {
+          if (countMap.hasOwnProperty(drink)) { // นับเฉพาะเครื่องดื่มที่มีอยู่จริง
              countMap[drink]++;
           }
         });
       });
 
+      // แปลง object เป็น array แล้วเรียงลำดับจากคะแนนมากไปน้อย
       const sortedSummary = Object.entries(countMap).sort((a, b) => b[1] - a[1]);
+
       summaryBody.innerHTML = "";
       sortedSummary.forEach(([drink, score]) => {
-        const row = summaryBody.insertRow();
-        row.insertCell().textContent = drink;
-        row.insertCell().textContent = score;
+        const row = document.createElement("tr");
+        const nameCell = document.createElement("td");
+        const scoreCell = document.createElement("td");
+        nameCell.textContent = drink;
+        scoreCell.textContent = score;
+        row.appendChild(nameCell);
+        row.appendChild(scoreCell);
+        summaryBody.appendChild(row);
       });
     }
 
     function updateRankSummary() {
-      const rankCounts = [{}, {}, {}];
+      const rankCounts = [{}, {}, {}]; // [rank1_counts, rank2_counts, rank3_counts]
+
+      // Initialize counts for all known drinks to ensure they appear even with 0 votes
       drinks.forEach(drink => {
         rankCounts[0][drink] = 0;
         rankCounts[1][drink] = 0;
@@ -249,7 +269,7 @@
 
       votes.forEach(vote => {
         vote.ranks.forEach((drink, i) => {
-          if (rankCounts[i] && rankCounts[i].hasOwnProperty(drink)) {
+          if (rankCounts[i].hasOwnProperty(drink)) { // ตรวจสอบว่า drink อยู่ใน keys ที่กำหนดไว้
              rankCounts[i][drink]++;
           }
         });
@@ -258,29 +278,34 @@
       rankCounts.forEach((countMap, i) => {
         const tbody = document.querySelector(`#rank${i + 1}Summary tbody`);
         tbody.innerHTML = "";
-        const sorted = Object.entries(countMap).sort((a, b) => b[1] - a[1]);
+
+        const sorted = Object.entries(countMap)
+          .sort((a, b) => b[1] - a[1]); // เรียงจากมากไปน้อย
+
         sorted.forEach(([drink, count]) => {
-          const row = tbody.insertRow();
-          row.insertCell().textContent = drink;
-          row.insertCell().textContent = count;
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${drink}</td><td>${count}</td>`;
+          tbody.appendChild(row);
         });
       });
     }
     
     let chart;
+
     function updateChart() {
       const countMap = {};
-      drinks.forEach(d => countMap[d] = 0);
+      drinks.forEach(d => countMap[d] = 0); // เริ่มต้นด้วยเครื่องดื่มทั้งหมดที่รู้จัก
+
       votes.forEach(vote => {
         vote.ranks.forEach(drink => {
-          if (countMap.hasOwnProperty(drink)) {
+          if (countMap.hasOwnProperty(drink)) { // นับเฉพาะเครื่องดื่มที่มีอยู่จริง
             countMap[drink]++;
           }
         });
       });
 
-      const labels = [...drinks]; // สร้าง copy ของ drinks array เพื่อความปลอดภัย
-      const data = labels.map(d => countMap[d] || 0);
+      const labels = drinks; // ใช้ labels จาก drinks array ปัจจุบัน
+      const data = labels.map(d => countMap[d] || 0); // ถ้าเครื่องดื่มไม่มีคะแนนให้เป็น 0
 
       if (chart) chart.destroy();
       const ctx = document.getElementById("resultsChart").getContext("2d");
@@ -297,11 +322,12 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false, // เพิ่มเพื่อให้ปรับขนาดได้ดีขึ้น
           scales: {
             y: {
               beginAtZero: true,
-              ticks: { precision: 0 }
+              ticks: {
+                precision: 0 // แสดงเลขจำนวนเต็มบนแกน Y
+              }
             }
           },
           plugins: {
@@ -311,23 +337,25 @@
         },
         plugins: [{
           id: 'valueOnTop',
-          afterDatasetsDraw(chartInstance) {
-            const { ctx, data: chartData, chartArea: { top }, scales: { y } } = chartInstance; // เปลี่ยนชื่อ data เป็น chartData
+          afterDatasetsDraw(chartInstance) { // เปลี่ยนชื่อ argument เพื่อความชัดเจน
+            const { ctx, data, chartArea: { top }, scales: { y } } = chartInstance;
             ctx.save();
             chartInstance.getDatasetMeta(0).data.forEach((bar, i) => {
-              const val = chartData.datasets[0].data[i];
+              const val = data.datasets[0].data[i];
               if (val > 0) {
                 const x = bar.x;
                 const yPos = bar.y;
+
                 ctx.fillStyle = "#000";
                 ctx.font = "14px sans-serif";
                 ctx.textAlign = "center";
+
                 const valueY = yPos - 6;
                 const minY = top + 14;
                 ctx.fillText(val, x, valueY < minY ? minY : valueY);
               }
             });
-            ctx.restore();
+            ctx.restore(); // เพิ่ม restore เพื่อคืน context
           }
         }]
       });
@@ -341,12 +369,12 @@
       container.innerHTML = "";
       drinks.forEach((drink, i) => {
         const label = document.createElement("label");
-        label.textContent = `ชื่อเครื่องดื่ม ${i + 1}:`;
+        label.textContent = `ชื่อเครื่องดื่ม ${i + 1}:`; // เปลี่ยนเป็น "ชื่อเครื่องดื่ม"
         const input = document.createElement("input");
         input.type = "text";
         input.value = drink;
         input.dataset.index = i;
-        input.placeholder = `เช่น ${defaultDrinksList[i] || 'เครื่องดื่ม'}`; // ใช้ default list สำหรับ placeholder
+        input.placeholder = `เช่น ${drink}`; // เพิ่ม placeholder
 
         container.appendChild(label);
         container.appendChild(document.createElement("br"));
@@ -368,47 +396,35 @@
       const newDrinks = [];
       inputs.forEach(input => {
         const index = parseInt(input.dataset.index);
-        // ถ้าผู้ใช้ไม่ใส่ชื่อ ให้ใช้ชื่อ default หรือชื่อเดิมถ้ามี
-        const defaultName = defaultDrinksList[index] || `แก้ว${index + 1}`;
-        newDrinks[index] = input.value.trim() || drinks[index] || defaultName;
+        newDrinks[index] = input.value.trim() || `แก้ว${index + 1}`;
       });
-      drinks = newDrinks;
+      drinks = newDrinks; // อัปเดต drinks array หลัก
 
+      // --- START: แก้ไขส่วนนี้ ---
+      // บันทึก drinks ลง localStorage
       localStorage.setItem('blindTestDrinks', JSON.stringify(drinks));
-      populateDrinkDropdowns();
-      updateAllDisplays(); // อัปเดตทุกส่วนที่แสดงผล
+      // --- END: แก้ไขส่วนนี้ ---
+
+      populateDrinkDropdowns(); // เรียกฟังก์ชันนี้เพื่ออัปเดต dropdowns
+
+      // ไม่จำเป็นต้องรีเซ็ต votes หรือตารางผลโหวตเมื่อแค่เปลี่ยนชื่อเครื่องดื่ม
+      // แต่ควรอัปเดตสรุปและกราฟหากชื่อมีการเปลี่ยนแปลง
+      updateSummary();
+      updateRankSummary();
+      updateChart();
       closeDrinkConfig();
     }
 
-    // --- START: เพิ่มฟังก์ชัน resetStoredData ---
-    function resetStoredData() {
-      if (confirm("คุณต้องการรีเซ็ตข้อมูลการโหวตและชื่อเครื่องดื่มทั้งหมดที่บันทึกไว้ใช่หรือไม่?")) {
-        localStorage.removeItem('blindTestVotes');
-        localStorage.removeItem('blindTestDrinks');
-
-        votes = [];
-        drinks = [...defaultDrinksList]; // รีเซ็ต drinks กลับเป็นค่าเริ่มต้น
-
-        testerName.value = ""; // ล้างชื่อผู้ทดสอบใน input
-        populateDrinkDropdowns(); // อัปเดต dropdowns
-        updateAllDisplays(); // อัปเดตตารางและกราฟทั้งหมด
-
-        alert("ข้อมูลทั้งหมดถูกรีเซ็ตแล้ว");
-      }
-    }
-    // --- END: เพิ่มฟังก์ชัน resetStoredData ---
-
-    // --- START: สร้างฟังก์ชัน updateAllDisplays เพื่อลดโค้ดซ้ำซ้อน ---
-    function updateAllDisplays() {
+    // --- START: แก้ไขส่วนนี้ ---
+    // เรียกฟังก์ชันอัปเดตต่างๆ เพื่อแสดงข้อมูลที่โหลดมาตอนเริ่ม
+    // ตรวจสอบว่ามี votes ก่อนที่จะพยายาม update UI ที่เกี่ยวข้องกับ votes
+    if (votes.length > 0) {
         updateTable();
         updateSummary();
         updateRankSummary();
-        updateChart();
     }
-    // --- END: สร้างฟังก์ชัน updateAllDisplays ---
-
-    // เรียกฟังก์ชันอัปเดตต่างๆ เพื่อแสดงข้อมูลที่โหลดมาตอนเริ่ม
-    updateAllDisplays();
+    updateChart(); // กราฟควรอัปเดตเสมอเพื่อแสดง labels ของ drinks แม้ยังไม่มี vote
+    // --- END: แก้ไขส่วนนี้ ---
 
   </script>
 
